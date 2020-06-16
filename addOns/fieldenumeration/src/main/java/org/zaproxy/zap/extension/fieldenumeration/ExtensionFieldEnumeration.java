@@ -66,6 +66,7 @@ public class ExtensionFieldEnumeration extends ExtensionAdaptor {
 
     private void displayFieldEnumeration(HistoryReference ref) {
         fieldEnumeration.setHistoryRef(ref);
+        fieldEnumeration.pack();
         fieldEnumeration.setVisible(true);
     }
 
