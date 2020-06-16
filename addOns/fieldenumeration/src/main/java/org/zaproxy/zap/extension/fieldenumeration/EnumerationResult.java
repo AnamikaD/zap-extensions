@@ -231,7 +231,7 @@ public class EnumerationResult extends AbstractFrame {
                         blackChars.append(iChars.toString());
                         JScrollPane sp = new JScrollPane(blackChars);
                         dialog.setModal(true);
-                        dialog.setTitle("Blacklist Characters");
+                        dialog.setTitle(Constant.messages.getString("fieldenumeration.blacklist"));
                         dialog.setSize(new Dimension(400, 400));
                         dialog.add(sp);
                         dialog.setVisible(true);
