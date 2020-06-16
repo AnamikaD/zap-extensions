@@ -80,10 +80,7 @@ public class ExtensionFieldEnumeration extends ExtensionAdaptor {
     }
 
     void enumerateField(String url, String form, String charset) {
-        if (this.field == field) {
-            return;
-        }
-        this.field = field;
+        // TODO - Used by API
     }
 
     boolean isField() {
