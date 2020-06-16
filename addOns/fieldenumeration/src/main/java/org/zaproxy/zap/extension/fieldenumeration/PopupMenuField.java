@@ -29,7 +29,7 @@ public class PopupMenuField extends PopupMenuItemHistoryReferenceContainer {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = Logger.getLogger(PopupMenuField.class);
+    private static final Logger LOGGER = Logger.getLogger(PopupMenuField.class);
 
     private final ExtensionFieldEnumeration extension;
 
@@ -49,7 +49,7 @@ public class PopupMenuField extends PopupMenuItemHistoryReferenceContainer {
         try {
             extension.showFieldEnumeration(href);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
     }
 }

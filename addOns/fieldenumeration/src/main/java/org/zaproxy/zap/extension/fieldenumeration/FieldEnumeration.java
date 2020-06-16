@@ -74,6 +74,8 @@ public class FieldEnumeration extends AbstractDialog {
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(FieldEnumeration.class);
     private static final String CSV_EXTENSION = ".csv";
+    private static final String US_ASCII_CHARSET_NAME = "US-ASCII";
+    private static final String UTF_8_CHARSET_NAME = "UTF-8";
     private HttpSender httpSender;
 
     private JPanel jPanel = new JPanel();
@@ -463,7 +465,7 @@ public class FieldEnumeration extends AbstractDialog {
                             throw new IllegalArgumentException("Malformed header error.", mhe);
                         }
                         NameValuePair Original = null;
-                        for (org.zaproxy.zap.model.NameValuePair parameter : listParam) {
+                        for (NameValuePair parameter : listParam) {
                             if (field == parameter.getName()) {
                                 Original = parameter;
                                 break;
@@ -485,10 +487,10 @@ public class FieldEnumeration extends AbstractDialog {
                                 LOGGER.error(e.getMessage(), e);
                             }
                         } else {
-                            if (selectedChars == "US-ASCII") {
+                            if (selectedChars == US_ASCII_CHARSET_NAME) {
                                 start = 0;
                                 end = 128;
-                            } else if (selectedChars == "UTF-8") {
+                            } else if (selectedChars == UTF_8_CHARSET_NAME) {
                                 start = 0;
                                 end = 513;
                             } else {
