@@ -73,25 +73,24 @@ public class FieldEnumeration extends AbstractDialog {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(FieldEnumeration.class);
-    private static final String CSV_EXTENSION = ".csv";
     private static final String US_ASCII_CHARSET_NAME = "US-ASCII";
     private static final String UTF_8_CHARSET_NAME = "UTF-8";
     private HttpSender httpSender;
 
-    private JPanel jPanel = new JPanel();
-    private JTabbedPane tp = new JTabbedPane();
-    private JPanel formF = new JPanel();
-    private JPanel panel = new JPanel();
+    private JPanel primaryPanel = null;
+    private JTabbedPane tabbedPane = new JTabbedPane();
+    private JPanel formPanel = new JPanel();
+    private JPanel contentPanel = null;
     private JLabel printURL = new JLabel();
     private DefaultTableModel model = new DefaultTableModel();
     private JTable jTable = new JTable();
     private JButton buttonOK = new JButton(Constant.messages.getString("fieldenumeration.submit"));
-    private JLabel blacklist =
-            new JLabel(Constant.messages.getString("fieldenumeration.blacklist"));
-    private JTextArea blackText = new JTextArea(5, 5);
-    private JTextArea whiteText = new JTextArea(5, 5);
-    private JLabel whitelist =
-            new JLabel(Constant.messages.getString("fieldenumeration.whitelist"));
+    private JLabel denylistLabel =
+            new JLabel(Constant.messages.getString("fieldenumeration.denylist"));
+    private JTextArea denyTextArea = new JTextArea(5, 5);
+    private JTextArea allowTextArea = new JTextArea(5, 5);
+    private JLabel allowlistLabel =
+            new JLabel(Constant.messages.getString("fieldenumeration.allowlist"));
     private JComboBox<String> params = new JComboBox<String>();
     private JComboBox<String> charSets = new JComboBox<String>();
     private String selectedChars = null;
@@ -101,8 +100,8 @@ public class FieldEnumeration extends AbstractDialog {
     private JTextField highR = new JTextField();
     private JTextField postField = new JTextField();
     private Font font = new Font("Courier", Font.BOLD, 12);
-    private JScrollPane spBlack = new JScrollPane(blackText);
-    private JScrollPane spWhite = new JScrollPane(whiteText);
+    private JScrollPane denyScrollPane = new JScrollPane(denyTextArea);
+    private JScrollPane allowScrollPane = new JScrollPane(allowTextArea);
     private JProgressBar jProgressBar = new JProgressBar();
 
     private ButtonGroup group = new ButtonGroup();
@@ -235,7 +234,7 @@ public class FieldEnumeration extends AbstractDialog {
 
     private void initialize() {
         this.setTitle(Constant.messages.getString("fieldenumeration.field.popup"));
-        this.setContentPane(getJPanel());
+        this.setContentPane(getContentPanel());
 
         if (Model.getSingleton().getOptionsParam().getViewParam().getWmUiHandlingOption() == 0) {
             this.setSize(400, 400);
@@ -314,8 +313,8 @@ public class FieldEnumeration extends AbstractDialog {
                             }
                             persistAndShowMessage(message);
                         }
-                        blackText.append(iChars.toString());
-                        whiteText.append(lChars.toString());
+                        denyTextArea.append(iChars.toString());
+                        allowTextArea.append(lChars.toString());
                     }
                 };
 
@@ -323,192 +322,187 @@ public class FieldEnumeration extends AbstractDialog {
         thread.start();
     }
 
-    private JPanel getJPanel() {
-        panel.setSize(new Dimension(600, 600));
-        panel.setVisible(true);
-        tp.add(Constant.messages.getString("fieldenumeration.field.popup"), jPanel);
-        jPanel.setLayout(new GridBagLayout());
-        c1.fill = GridBagConstraints.HORIZONTAL;
-        jPanel.setSize(new Dimension(600, 600));
-        c1.gridx = 0;
-        c1.gridy = 0;
-        JLabel url = new JLabel(Constant.messages.getString("fieldenumeration.url"));
-        url.setFont(font);
-        jPanel.add(url, c1);
-        c1.anchor = GridBagConstraints.NORTH;
-        c1.gridx = 1;
-        c1.gridy = 0;
-        jPanel.add(printURL, c1);
-        c1.gridwidth = 2;
-        c1.gridx = 0;
-        c1.gridy = 1;
-        JLabel enterRegex = new JLabel(Constant.messages.getString("fieldenumeration.enter.regex"));
-        enterRegex.setFont(font);
-        jPanel.add(enterRegex, c1);
-        c1.gridx = 0;
-        c1.gridy = 2;
-        jPanel.add(regex, c1);
-        c1.gridx = 0;
-        c1.gridy = 3;
-        JLabel selectChars =
-                new JLabel(Constant.messages.getString("fieldenumeration.select.chars"));
-        selectChars.setFont(font);
-        jPanel.add(selectChars, c1);
-        charSets.addItem(Constant.messages.getString("fieldenumeration.ascii"));
-        charSets.addItem(Constant.messages.getString("fieldenumeration.utf"));
-        charSets.addItem(Constant.messages.getString("fieldenumeration.ebcidic"));
-        c1.gridx = 0;
-        c1.gridy = 4;
-        jPanel.add(charSets, c1);
-        c1.gridx = 0;
-        c1.gridy = 5;
-        JLabel formParam = new JLabel(Constant.messages.getString("fieldenumeration.form.param"));
-        formParam.setFont(font);
-        jPanel.add(formParam, c1);
-        formParam.setFont(font);
-        jPanel.add(formParam, c1);
-        c1.gridx = 0;
-        c1.gridy = 6;
-        jPanel.add(params, c1);
-        c1.gridx = 0;
-        c1.gridy = 7;
-        JLabel prefix = new JLabel(Constant.messages.getString("fieldenumeration.prefix"));
-        prefix.setFont(font);
-        jPanel.add(prefix, c1);
-        c1.gridx = 0;
-        c1.gridy = 8;
-        preField.setColumns(10);
-        jPanel.add(preField, c1);
-        c1.gridx = 0;
-        c1.gridy = 9;
-        JLabel postfix = new JLabel(Constant.messages.getString("fieldenumeration.postfix"));
-        postfix.setFont(font);
-        jPanel.add(postfix, c1);
-        c1.gridx = 0;
-        c1.gridy = 10;
-        postField.setColumns(10);
-        jPanel.add(postField, c1);
-        c1.gridx = 0;
-        c1.gridy = 11;
-        JLabel range = new JLabel(Constant.messages.getString("fieldenumeration.range"));
-        range.setFont(font);
-        jPanel.add(range, c1);
-        c1.gridx = 0;
-        c1.gridy = 12;
-        JLabel fromR = new JLabel(Constant.messages.getString("fieldenumeration.range.from"));
-        fromR.setFont(font);
-        jPanel.add(fromR, c1);
-        c1.gridx = 0;
-        c1.gridy = 13;
-        lowerR.setColumns(10);
-        jPanel.add(lowerR, c1);
-        c1.gridx = 0;
-        c1.gridy = 14;
-        JLabel toR = new JLabel(Constant.messages.getString("fieldenumeration.range.to"));
-        toR.setFont(font);
-        jPanel.add(toR, c1);
-        c1.gridx = 0;
-        c1.gridy = 15;
-        highR.setColumns(10);
-        jPanel.add(highR, c1);
-        c1.gridx = 0;
-        c1.gridy = 16;
-        jPanel.add(buttonOK, c1);
-        c1.gridx = 0;
-        c1.gridy = 17;
-        jProgressBar.setStringPainted(true);
-        jPanel.add(jProgressBar, c1);
-        c1.gridx = 0;
-        c1.gridy = 18;
-        blacklist.setFont(font);
-        jPanel.add(blacklist, c1);
-        c1.gridx = 0;
-        c1.gridy = 19;
-        jPanel.add(spBlack, c1);
-        c1.gridx = 0;
-        c1.gridy = 20;
-        whitelist.setFont(font);
-        jPanel.add(whitelist, c1);
-        c1.gridx = 0;
-        c1.gridy = 21;
-        jPanel.add(spWhite, c1);
+    private JPanel getPrimaryPanel() {
+        if (primaryPanel == null) {
+            int y = 0;
+            primaryPanel = new JPanel();
+            primaryPanel.setLayout(new GridBagLayout());
+            c1.fill = GridBagConstraints.HORIZONTAL;
+            primaryPanel.setSize(new Dimension(600, 600));
+            c1.gridx = 0;
+            c1.gridy = y;
+            JLabel url = new JLabel(Constant.messages.getString("fieldenumeration.url"));
+            url.setFont(font);
+            primaryPanel.add(url, c1);
+            c1.anchor = GridBagConstraints.NORTH;
+            c1.gridx = 1;
+            c1.gridy = y++;
+            primaryPanel.add(printURL, c1);
+            c1.gridwidth = 2;
+            c1.gridx = 0;
+            c1.gridy = y++;
+            JLabel enterRegex =
+                    new JLabel(Constant.messages.getString("fieldenumeration.enter.regex"));
+            enterRegex.setFont(font);
+            primaryPanel.add(enterRegex, c1);
+            c1.gridy = y++;
+            primaryPanel.add(regex, c1);
+            c1.gridy = y++;
+            JLabel selectChars =
+                    new JLabel(Constant.messages.getString("fieldenumeration.select.chars"));
+            selectChars.setFont(font);
+            primaryPanel.add(selectChars, c1);
+            charSets.addItem(Constant.messages.getString("fieldenumeration.ascii"));
+            charSets.addItem(Constant.messages.getString("fieldenumeration.utf"));
+            charSets.addItem(Constant.messages.getString("fieldenumeration.ebcidic"));
+            c1.gridy = y++;
+            primaryPanel.add(charSets, c1);
+            c1.gridy = y++;
+            JLabel formParam =
+                    new JLabel(Constant.messages.getString("fieldenumeration.form.param"));
+            formParam.setFont(font);
+            primaryPanel.add(formParam, c1);
+            formParam.setFont(font);
+            primaryPanel.add(formParam, c1);
+            c1.gridy = y++;
+            primaryPanel.add(params, c1);
+            c1.gridy = y++;
+            JLabel prefix = new JLabel(Constant.messages.getString("fieldenumeration.prefix"));
+            prefix.setFont(font);
+            primaryPanel.add(prefix, c1);
+            c1.gridy = y++;
+            preField.setColumns(10);
+            primaryPanel.add(preField, c1);
+            c1.gridy = y++;
+            JLabel postfix = new JLabel(Constant.messages.getString("fieldenumeration.postfix"));
+            postfix.setFont(font);
+            primaryPanel.add(postfix, c1);
+            c1.gridy = y++;
+            postField.setColumns(10);
+            primaryPanel.add(postField, c1);
+            c1.gridy = y++;
+            JLabel range = new JLabel(Constant.messages.getString("fieldenumeration.range"));
+            range.setFont(font);
+            primaryPanel.add(range, c1);
+            c1.gridy = y++;
+            JLabel fromR = new JLabel(Constant.messages.getString("fieldenumeration.range.from"));
+            fromR.setFont(font);
+            primaryPanel.add(fromR, c1);
+            c1.gridy = y++;
+            lowerR.setColumns(10);
+            primaryPanel.add(lowerR, c1);
+            c1.gridy = y++;
+            JLabel toR = new JLabel(Constant.messages.getString("fieldenumeration.range.to"));
+            toR.setFont(font);
+            primaryPanel.add(toR, c1);
+            c1.gridy = y++;
+            highR.setColumns(10);
+            primaryPanel.add(highR, c1);
+            c1.gridy = y++;
+            primaryPanel.add(buttonOK, c1);
+            c1.gridy = y++;
+            jProgressBar.setStringPainted(true);
+            primaryPanel.add(jProgressBar, c1);
+            c1.gridy = y++;
+            denylistLabel.setFont(font);
+            primaryPanel.add(denylistLabel, c1);
+            c1.gridy = y++;
+            primaryPanel.add(denyScrollPane, c1);
+            c1.gridy = y++;
+            allowlistLabel.setFont(font);
+            primaryPanel.add(allowlistLabel, c1);
+            c1.gridy = y++;
+            primaryPanel.add(allowScrollPane, c1);
+        }
+        return primaryPanel;
+    }
 
-        tp.add("Forms", formF);
+    private JPanel getContentPanel() {
+        if (contentPanel == null) {
+            contentPanel = new JPanel();
+            contentPanel.setSize(new Dimension(600, 600));
+            contentPanel.setVisible(true);
+            tabbedPane.add(
+                    Constant.messages.getString("fieldenumeration.field.popup"), getPrimaryPanel());
 
-        panel.add(tp);
+            tabbedPane.add(
+                    Constant.messages.getString("fieldenumeration.form.fields.tab.name"),
+                    formPanel);
 
-        buttonOK.addActionListener(
-                new ActionListener() {
+            contentPanel.add(tabbedPane);
 
-                    @Override
-                    public void actionPerformed(ActionEvent event) {
+            buttonOK.addActionListener(
+                    new ActionListener() {
 
-                        field = (String) params.getSelectedItem();
-                        selectedChars = (String) charSets.getSelectedItem();
-                        String pre = preField.getText();
-                        String post = postField.getText();
-                        String regexStr = regex.getText();
-                        // Result tab
-                        model.addColumn(Constant.messages.getString("fieldenumeration.chars"));
-                        model.addColumn(Constant.messages.getString("fieldenumeration.result"));
-                        jTable.setModel(model);
-                        // end
-                        JTextField tf = new JTextField();
-                        tf.setEditable(false);
-                        DefaultCellEditor editor = new DefaultCellEditor(tf);
-                        jTable.setDefaultEditor(FieldEnumeration.class, editor);
+                        @Override
+                        public void actionPerformed(ActionEvent event) {
 
-                        httpSender = gethttpSender();
-                        try {
-                            msg = historyRef.getHttpMessage().cloneRequest();
-                        } catch (HttpMalformedHeaderException | DatabaseException mhe) {
-                            throw new IllegalArgumentException("Malformed header error.", mhe);
-                        }
-                        NameValuePair Original = null;
-                        for (NameValuePair parameter : listParam) {
-                            if (field == parameter.getName()) {
-                                Original = parameter;
-                                break;
-                            }
-                        }
+                            field = (String) params.getSelectedItem();
+                            selectedChars = (String) charSets.getSelectedItem();
+                            String pre = preField.getText();
+                            String post = postField.getText();
+                            String regexStr = regex.getText();
+                            // Result tab
+                            model.addColumn(Constant.messages.getString("fieldenumeration.chars"));
+                            model.addColumn(Constant.messages.getString("fieldenumeration.result"));
+                            jTable.setModel(model);
+                            // end
+                            JTextField tf = new JTextField();
+                            tf.setEditable(false);
+                            DefaultCellEditor editor = new DefaultCellEditor(tf);
+                            jTable.setDefaultEditor(FieldEnumeration.class, editor);
 
-                        int start = 0;
-                        int end = 0;
-
-                        if (!lowerR.getText().isEmpty() && !highR.getText().isEmpty()) {
+                            httpSender = gethttpSender();
                             try {
-                                start = Integer.parseInt(lowerR.getText());
-                            } catch (NumberFormatException e) {
-                                LOGGER.error(e.getMessage(), e);
+                                msg = historyRef.getHttpMessage().cloneRequest();
+                            } catch (HttpMalformedHeaderException | DatabaseException mhe) {
+                                throw new IllegalArgumentException("Malformed header error.", mhe);
                             }
-                            try {
-                                end = Integer.parseInt(highR.getText());
-                            } catch (NumberFormatException e) {
-                                LOGGER.error(e.getMessage(), e);
+                            NameValuePair Original = null;
+                            for (NameValuePair parameter : listParam) {
+                                if (field == parameter.getName()) {
+                                    Original = parameter;
+                                    break;
+                                }
                             }
-                        } else {
-                            if (selectedChars == US_ASCII_CHARSET_NAME) {
-                                start = 0;
-                                end = 128;
-                            } else if (selectedChars == UTF_8_CHARSET_NAME) {
-                                start = 0;
-                                end = 513;
+
+                            int start = 0;
+                            int end = 0;
+
+                            if (!lowerR.getText().isEmpty() && !highR.getText().isEmpty()) {
+                                try {
+                                    start = Integer.parseInt(lowerR.getText());
+                                } catch (NumberFormatException e) {
+                                    LOGGER.error(e.getMessage(), e);
+                                }
+                                try {
+                                    end = Integer.parseInt(highR.getText());
+                                } catch (NumberFormatException e) {
+                                    LOGGER.error(e.getMessage(), e);
+                                }
                             } else {
-                                start = 0;
-                                end = 226;
+                                if (selectedChars == US_ASCII_CHARSET_NAME) {
+                                    start = 0;
+                                    end = 128;
+                                } else if (selectedChars == UTF_8_CHARSET_NAME) {
+                                    start = 0;
+                                    end = 513;
+                                } else {
+                                    start = 0;
+                                    end = 226;
+                                }
                             }
+
+                            denyTextArea.setText("");
+                            allowTextArea.setText("");
+
+                            start(start, end, pre, post, regexStr, Original);
                         }
+                    });
 
-                        blackText.setText("");
-                        whiteText.setText("");
-
-                        start(start, end, pre, post, regexStr, Original);
-                    }
-                });
-
-        pack();
-
-        return panel;
+            pack();
+        }
+        return contentPanel;
     }
 
     public HistoryReference getHistoryRef() {
@@ -528,12 +522,11 @@ public class FieldEnumeration extends AbstractDialog {
 
     public void setHistoryRef(HistoryReference historyRef) {
         this.historyRef = historyRef;
-        StringBuilder sb = new StringBuilder();
-        sb.append(historyRef.getURI().toString());
-        printURL.setText(sb.toString());
+        printURL.setText(historyRef.getURI().toString());
 
-        // formF.removeAll();
-        formF.setLayout(new GridBagLayout());
+        formPanel.removeAll();
+        params.removeAllItems();
+        formPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbcForm = new GridBagConstraints();
         gbcForm.gridy = 0;
         gbcForm.anchor = GridBagConstraints.NORTH;
@@ -543,12 +536,12 @@ public class FieldEnumeration extends AbstractDialog {
                     Model.getSingleton()
                             .getSession()
                             .getParameters(historyRef.getHttpMessage(), HtmlParameter.Type.form);
-            for (org.zaproxy.zap.model.NameValuePair parameter : listParam) {
+            for (NameValuePair parameter : listParam) {
                 JRadioButton button = new JRadioButton(parameter.getName());
                 group.add(button);
                 gbcForm.gridx = 0;
                 gbcForm.fill = GridBagConstraints.NONE;
-                formF.add(button, gbcForm);
+                formPanel.add(button, gbcForm);
                 params.addItem(parameter.getName());
 
                 ZapTextField textField = new ZapTextField(parameter.getValue());
@@ -556,7 +549,7 @@ public class FieldEnumeration extends AbstractDialog {
 
                 gbcForm.gridx = 1;
                 gbcForm.fill = GridBagConstraints.HORIZONTAL;
-                formF.add(textField, gbcForm);
+                formPanel.add(textField, gbcForm);
 
                 gbcForm.gridy++;
             }

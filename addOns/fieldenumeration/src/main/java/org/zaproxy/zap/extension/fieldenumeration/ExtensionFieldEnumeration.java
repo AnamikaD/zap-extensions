@@ -57,6 +57,16 @@ public class ExtensionFieldEnumeration extends ExtensionAdaptor {
         API.getInstance().registerApiImplementor(enumAPI);
     }
 
+    @Override
+    public boolean canUnload() {
+        return true;
+    }
+
+    @Override
+    public void unload() {
+        API.getInstance().removeApiImplementor(enumAPI);
+    }
+
     private PopupMenuField getPopupMenuField() {
         if (popupMenuField == null) {
             popupMenuField = new PopupMenuField(this);
